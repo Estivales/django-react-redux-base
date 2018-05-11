@@ -25,7 +25,6 @@ INSTALLED_APPS = (
     'knox',
     'django_extensions',
 
-    'accounts',
     'base'
 )
 
@@ -70,8 +69,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-AUTH_USER_MODEL = 'accounts.User'
 
 ACCOUNT_ACTIVATION_DAYS = 7  # days
 

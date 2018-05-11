@@ -11,20 +11,28 @@ services:
             - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
         volumes_from:
             - backend
-    postgres:
-        extends:
-            file: docker-common.yml
-            service: postgres
-        ports:
-            - 5433:5432
+    mariadb:
+        image: mariadb
         volumes:
-            - ./docker/postgres/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+            - ./docker/mariadb:/data
+        command: --init-file /data/init_db.sql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: mysql
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker/mariadb:/mariadb
+        entrypoint:
+            - /mariadb/db-entrypoint.sh
     backend:
         extends:
             file: docker-common.yml
             service: django
         links:
-            - postgres
+            - mariadb
         entrypoint:
             - /django-entrypoint.sh
         expose:
@@ -37,3 +45,8 @@ services:
             - backend
         entrypoint:
             - /web-entrypoint.sh
+    redis:
+        image: "redis:alpine"
+        ports:
+          - "6373:6373"
+        container_name: redis
